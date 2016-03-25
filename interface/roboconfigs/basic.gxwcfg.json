@@ -1,0 +1,34 @@
+{
+    "GrabberXW" : {
+        "type" : "arm-config",
+        "version" : 0,
+        "contents" : {
+            "path" : [
+                {
+                    "type": "joint",
+                    "joint-type": "rotational",
+                    "plane": "XZ"
+                },
+                {
+                    "type": "joint",
+                    "joint-type": "rotational",
+                    "plane": "XY"
+                },
+                {
+                    "type": "linkage",
+                    "length": 30
+                },
+                {
+                    "type": "joint",
+                    "joint-type": "rotational",
+                    "plane": "XZ"
+                },
+                {
+                    "type": "joint",
+                    "joint-type": "rotational",
+                    "plane": "XY"
+                }
+            ]
+        }
+    }
+}
