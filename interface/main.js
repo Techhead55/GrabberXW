@@ -18,8 +18,10 @@ var GrabberXW = {
         GrabberXW.threejs.renderer = new THREE.WebGLRenderer();
         GrabberXW.threejs.renderer.setSize( window.innerWidth-300, window.innerHeight );
         GrabberXW.threejs.renderer.domElement.setAttribute("id", "GrabberXW_Render");
+        GrabberXW.threejs.renderer.shadowMap.enabled = true;
         document.body.appendChild(GrabberXW.threejs.renderer.domElement );
-        GrabberXW.taskmanager.resize.register(function(){
+        GrabberXW.managers.resize = new GrabberXW.util.eventmanager();
+        GrabberXW.managers.resize.register(function(){
             GrabberXW.threejs.renderer.setSize(window.innerWidth-GrabberXW.config.sidebarSize, window.innerHeight);
             GrabberXW.threejs.camera.aspect = (window.innerWidth-GrabberXW.config.sidebarSize) / window.innerHeight;
             GrabberXW.threejs.camera.updateProjectionMatrix();
@@ -28,8 +30,12 @@ var GrabberXW = {
         GrabberXW.threejs.camera.position.z = 40;
         
         var geometry = new THREE.BoxGeometry( 30, 30, 30 );
-        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 , wireframe: true} );
+        var material = new THREE.MeshBasicMaterial({
+            color: 0xffa223
+        });
         cube = new THREE.Mesh( geometry, material );
+        cube.castShadow = true;
+        cube.receiveShadow = true;
         GrabberXW.threejs.scene.add( cube );
 
         GrabberXW.threejs.scene.add(GrabberXW.threejs.helpers.constructAxisMarker({
@@ -37,6 +43,11 @@ var GrabberXW = {
             origin: [0, 0, 0]
         }));
  
+light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+        light.position.set(0, 50, 0);
+        light.castShadow = true;
+GrabberXW.threejs.scene.add( light );
+
         
         GrabberXW.threejs.controls = new THREE.OrbitControls( GrabberXW.threejs.camera, GrabberXW.threejs.renderer.domElement );
         GrabberXW.threejs.controls.enableDamping = true;
@@ -78,21 +89,21 @@ var GrabberXW = {
             }
         }
     },
-    taskmanager: {
-        resize: {
-            events: [],
-            register: function(event){
-                GrabberXW.taskmanager.resize.events.push(event);
-            },
-            call: function(){
-                GrabberXW.taskmanager.resize.events.forEach(function(v, i, e){
-                    v();
-                });
-            }
-        }
+    managers: {
+        
     },
     util: {
-        
+        eventmanager: function(){
+            this.events = [];
+            this.register = function(event){
+                this.events.push(event);
+            };
+            this.call = function(){
+                this.events.forEach(function(v, i, e){
+                    v();
+                });
+            };
+        }
     }
 }
 window.onload = function(){
@@ -100,4 +111,4 @@ window.onload = function(){
         sidebarSize: 300
     });
 };
-window.onresize = GrabberXW.taskmanager.resize.call;
+window.onresize = function(){GrabberXW.managers.resize.call()};
